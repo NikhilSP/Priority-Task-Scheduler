@@ -6,23 +6,44 @@ namespace PriorityTaskScheduler;
 
 class Program
 {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
-        IScheduler<TaskInput> scheduler = new TaskScheduler<TaskInput>();
-       
-        Action<TaskInput> actionTask = (input) => Console.WriteLine($"Action task processing: {input.Tag}");
-        Func<TaskInput, int> funcTask = (input) => { Console.WriteLine($"Func task processing: {input.Tag}"); return input.Tag.Length; };
+        using var scheduler = new TaskScheduler<TaskInput>();
+
+        // Example tasks
+        Action<TaskInput> actionTask = (input) =>
+        {
+            Console.WriteLine($"Action task processing: {input.Tag}");
+            Thread.Sleep(1000); 
+            Console.WriteLine($"Action task completed: {input.Tag}");
+        };
+
+        Func<TaskInput, int> funcTask = (input) =>
+        {
+            Console.WriteLine($"Func task processing: {input.Tag}");
+            Thread.Sleep(1500); 
+            Console.WriteLine($"Func task completed: {input.Tag}");
+            return input.Tag.Length;
+        };
+
         Func<TaskInput, Task> asyncTask = async (input) =>
         {
             Console.WriteLine($"Async task processing: {input.Tag}");
-            await Task.Delay(100);
+            await Task.Delay(20000); 
             Console.WriteLine($"Async task completed: {input.Tag}");
         };
 
-        var actionTaskId = scheduler.ScheduleTask(actionTask, TaskPriority.High, new TaskInput("Action"));
-        var funcTaskId =  scheduler.ScheduleTask(funcTask, TaskPriority.Low, new TaskInput("Func"));
-        var asyncTaskId = scheduler.ScheduleTask(asyncTask, TaskPriority.Medium, new TaskInput("Async"));
-        
+        // Schedule 
+        Guid actionTaskId = scheduler.ScheduleTask(actionTask, TaskPriority.High, new TaskInput("Action Task Data") );
+        Guid funcTaskId = scheduler.ScheduleTask(funcTask, TaskPriority.Medium, new TaskInput("Func Task Data") );
+        Guid asyncTaskId = scheduler.ScheduleTask(asyncTask, TaskPriority.Low, new TaskInput("Async Task Data") );
+
+        // Start 
+        scheduler.Start();
+
+        // Cancel a task
+        scheduler.CancelTask(asyncTaskId);
+        Task.Delay(11000).Wait();
     }
     
 }

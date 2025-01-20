@@ -11,4 +11,6 @@ public class TaskWrapper<T>(Guid id, Delegate task, T taskInput, TaskPriority pr
     public T TaskInput { get; } = taskInput;
 
     public Delegate Task { get; } = task;
+
+    public CancellationTokenSource CancellationTokenSource { get; } = new ();
 }
