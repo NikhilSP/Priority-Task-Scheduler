@@ -1,16 +1,26 @@
 using PriorityTaskScheduler.Enums;
+using PriorityTaskScheduler.Model;
 
 namespace PriorityTaskScheduler.Contract;
 
-public class TaskWrapper<T>(Guid id, Delegate task, T taskInput, TaskPriority priority)
+public class TaskWrapper<TInput, TResult>
 {
-    public Guid Id { get; } = id;
+    public TaskWrapper(Guid id, Delegate task, TInput taskInput, TaskPriority priority, TaskSchedulingOptions options)
+    {
+        Id = id;
+        Task = task;
+        TaskInput = taskInput;
+        Priority = priority;
+        Options = options;
+        Metadata = new TaskMetadata { ScheduledTime = DateTime.UtcNow };
+    }
 
-    public TaskPriority Priority { get; } = priority;
-
-    public T TaskInput { get; } = taskInput;
-
-    public Delegate Task { get; } = task;
-
-    public CancellationTokenSource CancellationTokenSource { get; } = new ();
+    public Guid Id { get; }
+    public TaskPriority Priority { get; }
+    public TInput TaskInput { get; }
+    public Delegate Task { get; }
+    public CancellationTokenSource CancellationTokenSource { get; } = new();
+    public TaskMetadata Metadata { get; }
+    public TaskSchedulingOptions Options { get; }
+    public TaskResult<TResult>? Result { get; set; }
 }
