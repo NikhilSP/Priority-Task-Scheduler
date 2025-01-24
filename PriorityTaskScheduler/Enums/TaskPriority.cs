@@ -2,7 +2,7 @@ namespace PriorityTaskScheduler.Enums;
 
 public enum TaskPriority
 {
-    Low,
-    Medium,
-    High
+    Low=3,
+    Medium=2,
+    High=1
 }
